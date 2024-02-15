@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Login or Register{% endblock %}
+
+{% block additional_styles %}
+    <link rel="stylesheet" href="{% static 'css/signin.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="form-box">
+            <h1 id="title">{% if signup_active %}Sign Up{% else %}Sign In{% endif %}</h1>
+            <form method="post" action="{% if signup_active %}{% url 'register_user' %}{% else %}{% url 'login' %}{% endif %}">
+                {% csrf_token %}
+                <div class="input-group">
+                    
+                    <div class="input-field" id="nameField">
+                        <i class="fas fa-user-circle"></i>
+                        <label for = '' class = "form-label"> username </label>
+                        <input type="text" name = "username" placeholder="Name">
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-user-circle"></i>
+                        <label for = 'password' class = "form-label"> Password </label>
+                        <input type="Password" name = "password" placeholder="Password">
+                    </div>
+                    <p>Already have an account? <a href="{% url 'register_user' %}">Sign up</a></p>
+                    <p>Forgot Password <a href="#">Click Here</a></p>
+                    <button type="submit">{% if signup_active %}Sign Up{% else %}Sign In{% endif %}</button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+    <script>
+        let signupbtn = document.getElementById("signupbtn");
+        let signinbtn = document.getElementById("signinbtn");
+        let nameField = document.getElementById("nameField");
+        let title = document.getElementById("title");
+
+        signinbtn.onclick = function(){
+            nameField.style.maxHeight = "0";
+            title.innerHTML = "Sign In";
+            signinbtn.classList.add("disable");
+            signupbtn.classList.remove("disable");
+        }
+
+        signupbtn.onclick = function(){
+            nameField.style.maxHeight = "60px";
+            title.innerHTML = "Sign Up";
+            signupbtn.classList.add("disable");
+            signinbtn.classList.remove("disable");
+        }
+    </script>
+{% endblock %}

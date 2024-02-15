@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Register{% endblock %}
+
+{% block additional_styles %}
+    <link rel="stylesheet" href="{% static 'css/signin.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="form-box">
+            <h1 id="title">Sign Up</h1>
+            <form method="post" action="{% url 'register_user' %}">
+                {% csrf_token %}
+                <div class="input-group">
+                    <div class="input-field">
+                        <i class="fa-solid fa-envelope"></i>
+                        <label for = '' class = "form-label"> email </label>
+                        {% render_field form.email class="form-control" %}
+                    </div>
+                    <div class="input-field" id="nameField">
+                        <i class="fas fa-user-circle"></i>
+                        <label for = '' class = "form-label"> username </label>
+                        {% render_field form.username class="form-control" %}
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-user-circle"></i>
+                        <label for = 'password' class = "form-label"> Password </label>
+                        {% render_field form.password1 class="form-control" %}
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-user-circle"></i>
+                        <label for = 'password' class = "form-label"> Confirm Password </label>
+                        {% render_field form.password2 class="form-control" %}
+                    </div>
+                    <button type="submit">Sign Up</button>
+                </div>
+                
+            </form>
+            <p>Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+        </div>
+    </div>
+{% endblock %}
