@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'accounts',
     'ticket',
     'widget_tweaks',
+    'bootstrap5',
     'fontawesomefree',
 ]
 
@@ -126,6 +127,8 @@ STATIC_ROOT = "static/"
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'accounts', 'static'),
+    os.path.join(BASE_DIR, 'ticket', 'static'),
+    os.path.join(BASE_DIR, 'dashboard', 'static'),
 ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

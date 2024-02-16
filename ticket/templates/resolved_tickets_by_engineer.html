@@ -1,0 +1,66 @@
+<!-- all_tickets.html -->
+{% extends 'base.html' %}
+
+{% block title %}Resolved by me{% endblock %}
+
+{% block content1 %}
+    <h1 class = "text-dark">Resolved By me</h1>
+    <div
+        class="table-responsive"
+    >
+        <table
+            class="table table-primary"
+        >
+            <thead>
+                <tr>
+                    <th scope="col">ticket ID</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Created On</th>
+                    <th scope="col">Created By</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                    <a href = {% url 'dashboard' %} >
+                        <tr class="">
+                            <td scope="row"> <small>{{ticket.ticket_id}}</small> </td>
+                            <td>{{ticket.title}}</td>
+                            <td>{{ticket.date_created}} </td>
+                            {% if ticket.created_by.username %}
+                                <td>{{ticket.assigned_to}}</td>
+                            {% else %}
+                                <td>Not Assigned</td>
+                            {% endif %}
+                            {% if ticket.ticket_status == 'Active' %}
+
+                                <td> <span
+                                    class="badge bg-success"
+                                    >Active</span>
+                                </td>
+                            {% elif ticket.ticket_status == 'Pending' %}
+
+                                <td> <span
+                                    class="badge bg-warning"
+                                    >Pending</span>
+                                 </td>
+                            {% else %}
+                                 <td> <span
+                                    class="badge bg-primary"
+                                    >Resolved</span
+                                 >
+                                 </td>
+                            {% endif %}
+
+                            <td><small><a href = "{% url "view_ticket" ticket.pk %}"> View Ticket </a> </small></td>
+                        </tr>
+                    </a>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+        
+
+{% endblock %}

@@ -1,0 +1,152 @@
+<!-- base.html -->
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ticket.css' %}">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css"> 
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    {% block additionalStyles %} {% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    {% if request.user.is_staff %}
+    <div class="container-fluid">
+        <div class="row flex-nowrap">
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                    <a href="{% url "dashboard" %}" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                        <span class="fs-5 d-none d-sm-inline">CallHub.io</span>
+                    </a>
+                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                        <li class = " mt-2">
+                            <a href="" class="nav-link align-middle px-0">
+                                <i class="fa-solid fa-2xl fa-house"></i></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                            </a>
+                        </li>
+                        <li class = " mt-2">
+                            <a href="{% url 'dashboard' %}" class="nav-link px-0 align-middle ">
+                                <i class="fa-solid fa-2xl fa-table-columns"></i><span class="ms-1 d-none d-sm-inline">Dashboard</span> </a>
+                        </li>
+                        <li class = " mt-2">
+                            <a href="{% url "ticket-queue" %}" class="nav-link px-0 align-middle">
+                                <i class="fa-solid fa-2xl fa-ticket"></i> <span class="ms-1 d-none d-sm-inline">Tickets Queue</span></a>
+                        </li>
+                        <li class = " mt-2">
+                            <a href="{% url "resolved-tickets" %}" class="nav-link px-0 align-middle">
+                                <i class="fa-solid fa-2xl fa-circle-check"></i> <span class="ms-1 d-none d-sm-inline">Resolved</span></a>
+                        </li>
+                        <li class = " mt-2">
+                            <a href="{% url "pending_tickets_of_engineer" %}" class="nav-link px-0 align-middle">
+                                <i class="fa-solid fa-2xl fa-triangle-exclamation"></i> <span class="ms-1 d-none d-sm-inline">Pending</span></a>
+                        </li>
+                        
+                        
+                    </ul>
+                    <hr>
+                    <div class="dropdown pb-4">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://github.com/mdo.png" alt="hugenerd" width="30" height="30" class="rounded-circle">
+                            <span class="d-none d-sm-inline mx-1">{{request.user}}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                            <li><a class="dropdown-item" href="{% url "profile" %}">Profile</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{% url "logout" %}">Sign out</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col py-3">
+                {% block content1 %}
+
+
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+    {% elif request.user.is_customer %}
+        <div class="container-fluid">
+            <div class="row flex-nowrap">
+                <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+                    <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                        <a href="{% url "dashboard" %}" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                            <span class="fs-5 d-none d-sm-inline">CallHub.io</span>
+                        </a>
+                        <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                            <li class = " mt-2">
+                                <a href="" class="nav-link align-middle px-0">
+                                    <i class="fa-solid fa-2xl fa-house"></i></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                                </a>
+                            </li>
+                            <li class = " mt-2">
+                                <a href="{% url 'dashboard' %}" class="nav-link px-0 align-middle ">
+                                    <i class="fa-solid fa-2xl fa-table-columns"></i><span class="ms-1 d-none d-sm-inline">Dashboard</span> </a>
+                            </li>
+                            <li class = " mt-2">
+                                <a href="{% url "all_tickets" %}" class="nav-link px-0 align-middle">
+                                    <i class="fa-solid fa-2xl fa-ticket"></i> <span class="ms-1 d-none d-sm-inline">All Tickets</span></a>
+                            </li>
+                            <li class = " mt-2">
+                                <a href="{% url "create-ticket" %}" class="nav-link px-0 align-middle">
+                                    <i class="fa-solid fa-2xl fa-hand"></i> <span class="ms-1 d-none d-sm-inline">Raise Ticket</span></a>
+                            </li>
+                            <li class = " mt-2">
+                                <a href="{% url "pending_tickets_of_engineer" %}" class="nav-link px-0 align-middle">
+                                    <i class="fa-solid fa-2xl fa-triangle-exclamation"></i> <span class="ms-1 d-none d-sm-inline">Pending</span></a>
+                            </li>
+                            
+                            
+                            
+                        </ul>
+                        <hr>
+                        {% if request.user %}
+                            <div class="dropdown pb-4">
+                                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="https://github.com/mdo.png" alt="hugenerd" width="30" height="30" class="rounded-circle">
+                                    <span class="d-none d-sm-inline mx-1">{{request.user}}</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                                    <li><a class="dropdown-item" href="{% url "profile" %}">Profile</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="{% url "logout" %}">Sign out</a></li>
+                                </ul>
+                            </div>
+                        {% else%}
+                            <ul>
+                                <li><a class="dropdown-item" href="{% url "login" %}">Sign in</a></li>
+                                <li><a class="dropdown-item" href="{% url "register_user" %}">Sign up</a></li>
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col py-3">
+                    {% block content %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{message.tags}} mx-auto" style="width: 40rem; height: 5vh" role="alert">
+                                    <b>{{message}}</b>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% bootstrap_javascript %}
+</body>
+</html>

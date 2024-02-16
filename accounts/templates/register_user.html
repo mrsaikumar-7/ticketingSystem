@@ -1,45 +1,69 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
 {% load static %}
 {% load widget_tweaks %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ticketing System{% endblock %}</title>
+    
+    {% block additional_styles %}
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/signin.css' %}">
+    {% endblock %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="{% static 'fontawesomefree/css/fontawesome.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'fontawesomefree/css/brands.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'fontawesomefree/css/solid.css' %}" type="text/css">
+    <!-- Add any additional stylesheets or scripts here -->
+</head>
+<body>
 
-{% block title %}Register{% endblock %}
-
-{% block additional_styles %}
-    <link rel="stylesheet" href="{% static 'css/signin.css' %}">
-{% endblock %}
-
-{% block content %}
     <div class="container">
         <div class="form-box">
             <h1 id="title">Sign Up</h1>
             <form method="post" action="{% url 'register_user' %}">
                 {% csrf_token %}
-                <div class="input-group">
-                    <div class="input-field">
-                        <i class="fa-solid fa-envelope"></i>
-                        <label for = '' class = "form-label"> email </label>
-                        {% render_field form.email class="form-control" %}
-                    </div>
-                    <div class="input-field" id="nameField">
-                        <i class="fas fa-user-circle"></i>
-                        <label for = '' class = "form-label"> username </label>
-                        {% render_field form.username class="form-control" %}
-                    </div>
-                    <div class="input-field">
-                        <i class="fas fa-user-circle"></i>
-                        <label for = 'password' class = "form-label"> Password </label>
-                        {% render_field form.password1 class="form-control" %}
-                    </div>
-                    <div class="input-field">
-                        <i class="fas fa-user-circle"></i>
-                        <label for = 'password' class = "form-label"> Confirm Password </label>
-                        {% render_field form.password2 class="form-control" %}
-                    </div>
-                    <button type="submit">Sign Up</button>
+                    <div class=" d-flex flex-column">
+                        <div class="input-field">
+                            <i class="fa-solid fa-envelope"></i>
+                            <label for='email' class="form-label"> Email </label>
+                            {% render_field form.email class="form-control" %}
+                        </div>
+                        <div class="input-field">
+                            <label for='first_name' class="form-label"> First Name </label>
+                            {% render_field form.first_name class="form-control" %}
+                        </div>
+                        <div class="input-field">
+                            <label for='last_name' class="form-label"> Last Name </label>
+                            {% render_field form.last_name class="form-control" %}
+                        </div>
+                        <div class="input-field" id="nameField">
+                            <i class="fas fa-user-circle"></i>
+                            <label for='username' class="form-label"> Username </label>
+                            {% render_field form.username class="form-control" %}
+                        </div>
+                        <div class="input-field">
+                            <i class="fa-solid fa-key"></i>
+                            <label for='password' class="form-label"> Password </label>
+                            {% render_field form.password1 class="form-control" %}
+                        </div>
+                        {% if signup_active %}
+                            <div class="input-field">
+                                <i class="fa-solid fa-key"></i>
+                                <label for='password' class="form-label"> Confirm Password </label>
+                                {% render_field form.password2 class="form-control" %}
+                            </div>
+                        {% endif %}
+                        <button href = "{% url 'register_user' %}" class = "btn btn-primary" type="submit">Sign up</button>
                 </div>
-                
             </form>
-            <p>Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+                <p>Don't have an account? <a href="{% url 'login' %}">Sign in</a></p>
         </div>
     </div>
-{% endblock %}
+
+
+    <!-- Add any additional scripts here -->
+</body>
+</html>

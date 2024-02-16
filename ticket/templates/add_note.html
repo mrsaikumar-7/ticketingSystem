@@ -1,0 +1,28 @@
+<!-- add_note.html -->
+{% extends 'base.html' %}
+{% extends 'view_ticket.html' %}
+
+{% load widget_tweaks %}
+
+{% block title %}Add Note{% endblock %}
+
+{% block content %}
+  <h1>Add Note</h1>
+
+  <form method="post" action="{% url 'add_note' ticket_id=ticket.ticket_id %}">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="form-group">
+        {{ field.label_tag }}
+        {% render_field field class="form-control" %}
+        {% if field.errors %}
+          <div class="invalid-feedback">
+            {{ field.errors|striptags }}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Add Note</button>
+  </form>
+  <a href="{% url 'ticket:view_ticket' pk=ticket.ticket_id %}" class="btn btn-secondary mt-3">Back to Ticket</a>
+{% endblock %}

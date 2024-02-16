@@ -1,23 +1,38 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages 
+from django.contrib.auth.decorators import login_required
 from .models import Ticket
 import datetime
-from .form import CreateTicketForm, UpdateTicketForm
+from .form import CreateTicketForm, UpdateTicketForm, NoteForm
 
 
 #view complete ticket details
-def view_ticket(request,pk):
-    ticket = Ticket.objects.get(pk=pk)
-    context = {'ticket' : ticket}
-    return render(request, 'ticket/ticket_details.html',context)
+@login_required
+def view_ticket(request, pk):
+    print(request.user)
+    ticket = get_object_or_404(Ticket, pk=pk)
+    print(ticket.notes.all())
+    if request.method == 'POST':
+        form = NoteForm(request.POST)
+        if form.is_valid():
+            note = form.save(commit=False)
+            note.ticket = ticket
+            note.modified_by = request.user
+            note.save()
+            return redirect('view_ticket', pk=pk)
+    else:
+        form = NoteForm()
+    context = {'ticket': ticket, 'form': form}
+    return render(request, 'view_ticket.html', context)
 
 """For Customers"""
 
 #creating a ticket
+@login_required
 def create_ticket(request):
     if request.method == 'POST':
         form = CreateTicketForm(request.POST)
-        if form.isvalid():
+        if form.is_valid():
             ticket = form.save(commit=False)
             ticket.created_by = request.user
             ticket.ticket_status = 'Pending'
@@ -30,11 +45,12 @@ def create_ticket(request):
     else:
         form = CreateTicketForm()
         context= {'form': form}
-        return render(request, 'ticket/create_ticket.html',context)
+        return render(request, 'create_ticket.html',context)
     
     
     
 #update a ticket
+@login_required
 def update_ticket(request,pk):
     ticket = Ticket.objects.get(pk=pk)
     if request.method == 'POST':
@@ -54,22 +70,28 @@ def update_ticket(request,pk):
         
             
 #viewing all created Tickets
-
+@login_required
 def all_tickets(request):
-    tickets = Ticket.objects.filter(created_by=request.user)
+    if request.user.is_customer:
+        tickets = Ticket.objects.filter(created_by=request.user)
+    else:
+        tickets = Ticket.objects.filter(assigned_to=request.user)
     context = {"tickets" : tickets}
-    return render(request, 'ticket/all_tickets.html',context)
+    return render(request, 'all_tickets.html',context)
 
 
 #For Staff
 
 #view ticket queue
+@login_required
 def ticket_queue(request):
-    tickets = Ticket.objects.filter(ticket_status='Pending')
+    tickets = Ticket.objects.filter(assigned_to=None)
     context = {"tickets":tickets}
-    return render(request, 'ticket/ticket_queue.html',context)
+    print(tickets)
+    return render(request, 'ticket_queue.html',context)
 
 # accept a ticket from the queue
+@login_required
 def accept_ticket(request,pk):
     ticket = Ticket.objects.get(pk= pk)
     ticket.assigned_to = request.user
@@ -80,8 +102,10 @@ def accept_ticket(request,pk):
     return redirect('ticket-queue')
 
 #close a ticket
+@login_required
 def close_ticket(request,pk):
     ticket = Ticket.objects.get(pk= pk)
+    print("ticket is closed")
     ticket.ticket_status= 'Resolved'
     ticket.closed_date = datetime.datetime.now()
     ticket.is_resolved = True
@@ -91,16 +115,25 @@ def close_ticket(request,pk):
 
 
 #view all the tickets an engineer Working on
-def pending_tickets_of_engineer(request):
-    tickets = Ticket.objects.filter(assigned_to=request.user,is_resolved=False)
+@login_required
+def pending_tickets(request):
+    if request.user.is_staff:
+        tickets = Ticket.objects.filter(assigned_to=request.user,is_resolved=False)
+    else:
+        tickets = Ticket.objects.filter(created_by=request.user,is_resolved=False)
     context = {'tickets': tickets}
-    return render(request, 'ticket/pending_tickets_of_engineer.html',context)
+    print(tickets)
+    return render(request, 'pending_tickets.html',context)
 
 #all resolved tickets by an engineer
+@login_required
 def resolved_tickets_of_engineer(request):
     tickets = Ticket.objects.filter(assigned_to=request.user,is_resolved=True)
     context = {'tickets': tickets}
-    return render(request,'ticket/resolved_tickets_by_engineer.html',context)
+    return render(request,'resolved_tickets_by_engineer.html',context)
+
 
     
+
+
 

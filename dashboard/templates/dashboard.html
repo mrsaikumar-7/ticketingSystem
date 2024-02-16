@@ -1,98 +1,148 @@
-<!DOCTYPE html>
+<!-- dashboard.html -->
+{% extends 'base.html' %}
 {% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-     <!-- Our project just needs Font Awesome Free's Solid and Brand files -->
-     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
-     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
-     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
-   </head>
-</head>
-<body>
-    <div class="side-bar">
-        <div class="logo-name">
-            <h1>CallHub.io</h1>
-        </div>
-        <ul>
-            <li><img src="{% static 'images/download.jpg' %}" alt=""> &nbsp;Dashboard</li>
-            <li><img src="{% static 'images/reports.png' %}" alt="">&nbsp;Reports</li>
-            <li><img src="{% static 'images/setting.png' %}" alt="">&nbsp;Settings</li>
-            <li><img src="{% static 'images/help.jpg' %}" alt="">&nbsp; Help</li>
-        </ul>
-    </div>
-    <div class="container">
-        <div class="header">
-            <div class="nav">
-                <div class="search">
-                    <input type="text" placeholder="Search..">
-                    <button type="submit"><i width  class="fa-solid fa-2x fa-magnifying-glass"></i></button>
-                </div>
-                <div class="user">
-                    <a href="#" class="btn">Home</a>
-                    <img src="{% static 'images/notifications.jpg' %}" alt="">
-                    <div class="img-design">
-                        <img src="{% static 'images/profile.png' %}" alt="">
+
+{% block title %}Dashboard{% endblock %}
+
+{% if request.user.is_staff %}
+
+    {% block content1 %}
+        <div class="cards">
+            <a href="{% url 'all_tickets' %}">
+                <div class="card">
+                    <div class="box">
+                        <h2 class='text-dark'>Total Tickets</h2>
                     </div>
+                    <div class="icon-design d-flex">
+                        <img class="me-3 mb-4" src="{% static 'images/open.jpg' %}" alt="">
+                        <h3 class="ms-2 pt-3"> {{totalTickets}} </h3>
+                    </div>
+                </div>
+            </a>
+            <a href="{% url 'pending_tickets_of_engineer' %}">
+                <div class="card">
+                    <div class="box">
+                        <h2 class='text-dark text-decoration-none'>Active Tickets</h2>
+                    </div>
+                    <div class="icon-design d-flex">
+                        <img class="me-3 mb-4" src="{% static 'images/pending.png' %}" alt="">
+                        <h3 class="ms-2 pt-3"> {{ activeTickets }} </h3>
+                    </div>
+                </div>
+            </a>
+            <div class="card">
+                <div class="box">
+                    <h2>Pending Tickets</h2>
+                </div>
+                <div class="icon-design d-flex">
+                    <img class="me-3 mb-4" src="{% static 'images/onhold.png' %}" alt="">
+                    <h3 class="ms-2 pt-3"> {{pendingTickets}} </h3>
                 </div>
             </div>
-        </div>
-        <div class="content">
-            <div class="cards">
-                <div class="card">
-                    <div class="box">
-                        <h2>Open Tickets</h2>
-                    </div>
-                    <div class="icon-design">
-                        <img src="{% static 'images/open.jpg' %}" alt="">
-                    </div>
+            <div class="card">
+                <div class="box">
+                    <h2>Resolved</h2>
                 </div>
-                <div class="card">
-                    <div class="box">
-                        <h2>Pending Tickets</h2>
-                    </div>
-                    <div class="icon-design">
-                        <img src="{% static 'images/pending.png' %}" alt="">
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="box">
-                        <h2>On Hold</h2>
-                    </div>
-                    <div class="icon-design">
-                        <img src="{% static 'images/onhold.png' %}" alt="">
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="box">
-                        <h2>Solved</h2>
-                    </div>
-                    <div class="icon-design">
-                        <img src="{% static 'images/solved.jpg' %}" alt="">
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="box">
-                        <h2>Closed Tickets</h2>
-                    </div>
-                    <div class="icon-design">
-                        <img src="{% static 'images/closed.png' %}" alt="">
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="box">
-                        <h2>Spam</h2>
-                    </div>
-                    <div class="icon-design">
-                        <img src="{% static 'images/spam.jpg' %}" alt="">
-                    </div>
+                <div class="icon-design d-flex">
+                    <img class="me-3 mb-4" src="{% static 'images/solved.jpg' %}" alt="">
+                    <h3 class="ms-2 pt-3"> {{resolvedTickets}} </h3>
                 </div>
             </div>
+            <div style="width: 50%; margin: auto;">
+                <canvas id="chartjs-pie"></canvas>
+            </div>
+        </div>
+        <script>
+            new Chart(document.getElementById("chartjs-pie"), {
+                type: "pie",
+                data: {
+                    labels: ["Resolved", "Active", "Pending"],
+                    datasets: [{
+                        data: [{{ resolvedTickets }}, {{ activeTickets }}, {{ pendingTickets }}],
+                        backgroundColor: [
+                            'rgb(54, 162, 235)',
+                            'rgb(75, 192, 192)',
+                            'rgb(255, 205, 86)',
+                        ],
+                        borderColor: "transparent"
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutoutPercentage: 65,
+                }
+            });
+        </script>
+        
+    {% endblock %}
+{% elif request.user.is_customer %}
+    {% block content %}
+    <div class="cards">
+        <a href="{% url 'all_tickets' %}">
+            <div class="card">
+                <div class="box">
+                    <h2 class='text-dark'>Total Tickets</h2>
+                </div>
+                <div class="icon-design d-flex">
+                    <img class="me-3 mb-4" src="{% static 'images/open.jpg' %}" alt="">
+                    <h3 class="ms-2 pt-3"> {{totalTickets}} </h3>
+                </div>
+            </div>
+        </a>
+        <a href="{% url 'pending_tickets_of_engineer' %}">
+            <div class="card">
+                <div class="box">
+                    <h2 class='text-dark text-decoration-none'>Active Tickets</h2>
+                </div>
+                <div class="icon-design d-flex">
+                    <img class="me-3 mb-4" src="{% static 'images/pending.png' %}" alt="">
+                    <h3 class="ms-2 pt-3"> {{ activeTickets }} </h3>
+                </div>
+            </div>
+        </a>
+        <div class="card">
+            <div class="box">
+                <h2>Pending Tickets</h2>
+            </div>
+            <div class="icon-design d-flex">
+                <img class="me-3 mb-4" src="{% static 'images/onhold.png' %}" alt="">
+                <h3 class="ms-2 pt-3"> {{pendingTickets}} </h3>
+            </div>
+        </div>
+        <div class="card">
+            <div class="box">
+                <h2>Resolved</h2>
+            </div>
+            <div class="icon-design d-flex">
+                <img class="me-3 mb-4" src="{% static 'images/solved.jpg' %}" alt="">
+                <h3 class="ms-2 pt-3"> {{resolvedTickets}} </h3>
+            </div>
+        </div>
+        <div style="width: 50%; margin: auto;">
+            <canvas id="chartjs-pie"></canvas>
         </div>
     </div>
-</body>
-</html>
+    <script>
+        new Chart(document.getElementById("chartjs-pie"), {
+            type: "pie",
+            data: {
+                labels: ["Resolved", "Active", "Pending"],
+                datasets: [{
+                    data: [{{ resolvedTickets }}, {{ activeTickets }}, {{ pendingTickets }}],
+                    backgroundColor: [
+                        'rgb(54, 162, 235)',
+                        'rgb(75, 192, 192)',
+                        'rgb(255, 205, 86)',
+                    ],
+                    borderColor: "transparent"
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                cutoutPercentage: 65,
+            }
+        });
+    </script>
+    
+    {% endblock %}
+{% endif %}

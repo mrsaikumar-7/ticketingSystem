@@ -1,0 +1,78 @@
+<!-- view_ticket.html -->
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static%}
+{% block title %}View Ticket {{ ticket.title }}{% endblock %}
+{% block additionStyles %} {% static "css/ticket.css" %} {% endblock %}
+{% if request.user.is_customer %}
+    {% block content %}
+        <h1>{{ ticket.title }}</h1>
+        <p><strong>Description:</strong> {{ ticket.description }}</p>
+        <p><strong>Status:</strong> {{ ticket.ticket_status }}</p>
+        <p><strong>Created by:</strong> {{ ticket.created_by.username }}</p>
+        
+        {% if ticket.assigned_to %}
+            <p><strong>Assigned to:</strong> {{ ticket.assigned_to.username }}</p>
+        {% endif %}
+        
+        <p><strong>Created on:</strong> {{ ticket.date_created }}</p>
+        
+        <!-- Display notes related to the ticket -->
+        <h2>Notes</h2>
+        <ul class = "notes-container">
+            {% for note_ in ticket.notes.all %}
+                <li>{{ note_.note }} - {{ note_.modified_by.username }} ({{ note_.modified_date }})</li>
+            {% endfor %}
+        </ul>
+        
+        <!-- Form for adding a new note -->
+        <h2>Add Note</h2>
+        <form method="post" action="{% url 'view_ticket' ticket.pk %}">
+            {% csrf_token %}
+            <label for="note">Note:</label>
+            {% render_field form.note class="form-control" %}
+            <br>
+            <button type="submit" class="btn btn-primary">Add Note</button>
+        </form>
+    {% endblock %}
+{% elif request.user.is_staff %}
+    {% block content1 %}
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{message.tags}} mx-auto" style="width: 40rem; height: 5vh" role="alert">
+                <b>{{message}}</b>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <h1>{{ ticket.title }}</h1>
+        <p><strong>Description:</strong> {{ ticket.description }}</p>
+        <p><strong>Status:</strong> {{ ticket.ticket_status }}</p>
+        <p><strong>Created by:</strong> {{ ticket.created_by.username }}</p>
+        
+        {% if ticket.assigned_to %}
+            <p><strong>Assigned to:</strong> {{ ticket.assigned_to.username }}</p>
+        {% endif %}
+        
+        <p><strong>Created on:</strong> {{ ticket.date_created }}</p>
+        
+        <!-- Display notes related to the ticket -->
+        <h2>Notes</h2>
+        <ul class = "notes-container">
+            {% for note_ in ticket.notes.all %}
+                <li>{{ note_.note }} - {{ note_.modified_by.username }} ({{ note_.modified_date }})</li>
+            {% endfor %}
+        </ul>
+        
+        <!-- Form for adding a new note -->
+        <h2>Add Note</h2>
+        <form method="post" action="{% url 'view_ticket' ticket.pk %}">
+            {% csrf_token %}
+            <label for="note">Note:</label>
+            {% render_field form.note class="form-control" %}
+            <br>
+            <button type="submit" class="btn btn-primary">Add Note</button>
+        </form>
+        <br>
+        <a href ="{% url "close-ticket" ticket.pk %}" class = "btn btn-success" > Resolve </a>
+    {% endblock %}
+{% endif %}
